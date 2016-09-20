@@ -32,6 +32,8 @@ router.get('/:waveNo/:busNo', function(req, res) {
    var waveNo = req.params.waveNo;
    var busNo = req.params.busNo;
    
+   // todo: return 404 if no bus
+   
    client.hgetall(`wave${waveNo}bus${busNo}`, function(err, result) {
         if (err) {
             console.error(err);
