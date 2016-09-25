@@ -1,0 +1,97 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="../bower_components/paper-dialog/paper-dialog.html">
+<link rel="import" href="../bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="bus-card">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+      
+      .card {
+          margin:0px;
+      }
+      
+      h1 {
+        margin-top: 0px;
+      }
+      
+      .strength {
+        float: right;
+      } 
+  
+    paper-menu paper-item {
+    }
+    
+    </style>
+    
+    <iron-ajax
+      auto
+      url="[[generateEndpointUri(busNo, waveNo)]]"
+      handle-as="json"
+      last-response="{{busInfo}}"
+      loading="{{loading}}"></iron-ajax>
+
+    <div class="card" on-click="showBusMenu">
+      <div hidden="[[!loading]]">
+        <h1>Loading...</h1>
+      </div>
+      
+      <div hidden="[[loading]]">
+        <h1>Bus <span>[[busInfo.busNo]]</span></h1>
+        <div class="strength"><text style="font-size:3em">[[busInfo.strength]]</text> pax</div>
+        <div>Number plate: [[busInfo.plateNo]]</div>
+        <div>[[busInfo.status]]: [[busInfo.timeDeparted]] minutes ago</div>
+      </div>
+    </div>
+    
+    <paper-dialog id="busMenu">
+    <paper-menu>
+      <paper-item>Next state</paper-item>
+      <paper-item>Edit details</paper-item>
+      <paper-item>Delete bus</paper-item>
+    </paper-menu>
+    </paper-dialog>
+  </template>
+
+  <script>
+    /* global Polymer */
+    Polymer({
+      is: 'bus-card',
+
+      properties: {
+        host: { type: String, value: "https://de-assistant2-yi-jiahe.c9users.io/buses/" },
+        waveNo: { type: Number },
+        busNo: { type: Number },
+        plateNo: { type: String, value: "TEST123X" },
+        strength: { type: Number, value: 20 },
+        busStatus: { type: String, value: "Departed" },
+        timeDeparted: { type: Number, value: 1234 },
+        timeArrived: { type: Number, value: 1235 }
+      },
+      
+      generateEndpointUri: function(waveNo, busNo) {
+        return this.host + waveNo + '/' + busNo;
+      },
+      
+      handleResponse: function(response) {
+        this.waveNo = response.waveNo;
+        this.busNo = response.busNo;
+        this.plateNo = response.plateNo;
+        this.strength = response.strength;
+        this.busStatus = response.busStatus;
+        this.timeDeparted = response.timeDeparted;
+        this.timeArrived = response.timeArrived;
+      },
+      
+      showBusMenu: function () {
+        this.$.busMenu.open();
+      }
+    });
+  </script>
+</dom-module>

@@ -1,0 +1,65 @@
+<link rel="import" href="../bower_components/polymer/polymer.html">
+<link rel="import" href="../bower_components/iron-icons/iron-icons.html">
+<link rel="import" href="../bower_components/iron-collapse/iron-collapse.html">
+<link rel="import" href="../bower_components/paper-icon-button/paper-icon-button.html">
+<link rel="import" href="shared-styles.html">
+
+<dom-module id="wave-card">
+  <template>
+    <style include="shared-styles">
+      :host {
+        display: block;
+
+        padding: 10px;
+      }
+      
+      paper-icon-button {
+        float: right;
+      }
+    </style>
+    
+    <iron-ajax
+      auto
+      url="[[generateEndpointUri(waveNo)]]"
+      handle-as="json"
+      last-response="{{busesArray}}"
+      loading="{{loading}}"></iron-ajax>
+    
+    <h1>Wave [[waveNo]]<paper-icon-button icon="add" on-tap="toggleBuses"></paper-icon-button></h1>
+    <iron-collapse id="collapse">
+      <template is="dom-repeat" items="[[busesArray]]">
+        <bus-card wave-no=[[waveNo]], bus-no="[[item]]"></wave-card>
+      </template>
+    </iron-collapse>
+    
+  </template>
+
+  <script>
+    Polymer({
+      is: 'wave-card',
+      
+      properties: {
+        host: { type: String, value: "https://de-assistant2-yi-jiahe.c9users.io/buses/" },
+        waveNo: {
+          type: Number,
+        },
+        
+        busesArray: {
+          type: Array,
+          value: function() {
+            return [1, 2, 3, 4];
+          }
+        }
+        
+      },
+      
+      toggleBuses: function() {
+        this.$.collapse.toggle();
+      },
+      
+      generateEndpointUri: function(waveNo) {
+        return this.host + 'checkbuses/' + waveNo;
+      },
+    });
+  </script>
+</dom-module>
